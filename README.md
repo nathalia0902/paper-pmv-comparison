@@ -1,83 +1,135 @@
-# Repository of the Paper
+# Comparação entre os modelos PMV e PMV com efeito de resfriamento (PMVCE)
 
-This repository contains the source code and data analysis for the paper titled "Title of the Paper". 
-The paper investigates the differences between various PMV (Predicted Mean Vote) models and their applications in thermal comfort studies.
+Este repositório contém o código, os dados e os resultados utilizados na análise comparativa dos modelos de conforto térmico PMV, conforme a ISO 7730:2005, e PMV com Cooling Effect (PMVCE), conforme a ASHRAE 55:2023.
 
-## Directory Structure
+O trabalho tem como objetivo avaliar a capacidade desses modelos de estimar a sensação térmica dos ocupantes em ambientes reais, utilizando dados da **ASHRAE Global Thermal Comfort Database II**.
 
-The repository is organized as follows:
+## Referência do artigo
 
+TARTARINI, Federico; SCHIAVON, Stefano. *Comparative analysis of PMV Models accuracy implemented in the ISO 7730:2005 and ASHRAE 55:2023*. Building and Environment, v. 275, 2025, artigo 112766.
+
+DOI: https://doi.org/10.1016/j.buildenv.2025.112766
+
+**Repositório original dos autores:**
+https://github.com/FedericoTartarini/paper-pmv-comparison
+
+Este trabalho parte do código disponibilizado pelos autores. As alterações locais realizadas para execução, análise e geração de resultados devem ser consideradas em conjunto com a implementação original.
+
+## Estrutura do projeto
+
+```text
+├── Data/
+│   ├── db_measurements_v2.1.0.csv.gz
+│   ├── db_analysis.pkl.gz
+│   └── db_metadata.csv
+├── Manuscript/
+│   └── src/
+│       ├── figures/
+│       ├── tables/
+│       └── sections/
+├── main.py
+├── Pipfile
+├── Pipfile.lock
+└── README.md
 ```
-├── data/                   # Directory containing the datasets used in the analysis
-├── Manuscript/             # Directory containing the manuscript files
-│   ├── src/                # Source files for the manuscript
-│   │   └── figures/        # Figures generated for the manuscript
-│   │   └── tables/         # Tables generated for the manuscript
-│   │   └── sections/       # Sections of the manuscript
-├── main.py                 # Main Python script for data analysis and figure generation
-├── Pipfile                 # List of dependencies
-└── README.md               # This README file
+
+### Principais arquivos
+
+- `db_measurements_v2.1.0.csv.gz`: base original de medições da ASHRAE Global Thermal Comfort Database II.
+- `db_analysis.pkl.gz`: conjunto de dados processado utilizado nas análises.
+- `db_metadata.csv`: metadados associados à base de dados.
+- `main.py`: implementação dos modelos, processamento dos dados, análises e geração de gráficos.
+- `Pipfile` e `Pipfile.lock`: definição das dependências e versões registradas do ambiente Python.
+
+## Ambiente de execução
+
+O projeto utiliza Python 3.10.
+
+As dependências estão descritas no `Pipfile` e as versões resolvidas estão registradas no `Pipfile.lock`.
+
+Para instalar as dependências com Pipenv, utilize:
+
+```bash
+pip install pipenv
+pipenv install --ignore-pipfile
+pipenv shell
 ```
 
-## Getting Started
+Caso utilize um ambiente virtual Python convencional, instale as dependências conforme o `Pipfile` e utilize a versão de Python indicada pelo projeto.
 
-To get started with running the code locally, follow these steps:
+**Observação sobre as dependências:** o artigo menciona `pythermalcomfort` 2.8.1 na metodologia, enquanto o arquivo `Pipfile.lock` registra uma versão diferente. Essa diferença deve ser considerada ao tentar reproduzir exatamente os resultados publicados.
 
-1. **Clone the repository:**
+## Execução das análises
 
-    ```sh
-    git clone https://github.com/yourusername/repository-name.git
-    cd repository-name
-    ```
+O comando:
 
-2. **Install the dependencies:**
+```bash
+python main.py
+```
 
-   It is recommended to use `pipenv` for managing the virtual environment and dependencies. Run the following command to install the required packages:
+não executa a sequência completa de análises. O bloco principal do arquivo apenas fecha as figuras abertas.
 
-    ```sh
-    pipenv install
-    ```
+As análises podem ser executadas individualmente por meio das funções definidas em `main.py`.
 
-3. **Activate the virtual environment:**
+Por exemplo, para carregar os dados processados e calcular as métricas F1:
 
-    ```sh
-    pipenv shell
-    ```
+```bash
+python -c "import main; main.df = main.importing_filtering_processing(load_preprocessed=True); main.table_f1_scores()"
+```
 
-4. **Run the main script:**
+A função `importing_filtering_processing()` permite carregar os dados já processados ou realizar novamente o processamento da base original.
 
-   Execute the `main.py` file to perform the data analysis and generate the figures:
+**Atenção:** o processamento pode atualizar arquivos locais, incluindo o conjunto de dados processado e arquivos auxiliares do manuscrito. Recomenda-se manter cópias de segurança antes de executá-lo.
 
-    ```sh
-    python main.py
-    ```
+## Análises realizadas
 
-## Additional Information
+O estudo compara os resultados dos modelos PMV e PMVCE considerando diferentes condições de análise:
 
-### Dependencies
+- Base completa;
+- Velocidade do ar igual ou superior a 0,2 m/s;
+- Registros com medições de velocidade do ar em três alturas;
+- Subconjunto filtrado considerando os limites de PMV e sensação térmica observada.
 
-The dependencies are listed in the `Pipfile` file and can be installed using `pipenv install`.
+Entre as análises implementadas estão:
 
-### Data
+- Distribuição das variáveis de entrada;
+- Distribuição da sensação e preferência térmica;
+- Acurácia das previsões;
+- Métricas F1 micro, macro e weighted;
+- Comparação entre as previsões dos modelos e a sensação térmica observada;
+- Distribuição das discrepâncias entre os modelos e as respostas dos ocupantes;
+- Análise das discrepâncias em função das variáveis ambientais e pessoais.
 
-The `data/` directory contains the datasets required for the analysis. 
+## Resultados e interpretação
 
-- The original ASHRAE thermal comfort database II is stored in the `Data/db_measurements_v2.1.0.csv.gz` file.
-- The subset of the ASHRAE thermal comfort database II used in the analysis is stored in the `Data/db_analysis.pkl.gz` file.
-- The metadata of the ASHRAE thermal comfort database II is stored in the `Data/db_metadata.csv` file.
+Os resultados obtidos mostram diferenças entre os modelos, mas não indicam superioridade absoluta de um deles em todas as métricas.
 
-### Figures and Results
+Na análise realizada:
 
-The figures generated by the `main.py` script will be saved in the `Manuscript/src/figures/` directory. 
-These figures are used in the manuscript to illustrate the results of the analysis.
+- O PMVCE apresentou F1 micro superior ao PMV nos quatro cenários avaliados.
+- O PMV apresentou F1 macro superior nos quatro cenários.
+- O F1 weighted apresentou resultados dependentes do cenário analisado.
 
-### Contributing
+Esses resultados demonstram a importância de considerar diferentes métricas e a distribuição das classes ao avaliar a capacidade preditiva dos modelos.
 
-If you would like to contribute to this project, please fork the repository and submit a pull request. 
-We welcome any improvements or bug fixes.
+## Figuras e tabelas
 
-### License
+Os gráficos gerados pelas funções de análise são armazenados em:
 
-This project is licensed under the MIT License.
+```text
+Manuscript/src/figures/
+```
 
-For any questions or issues, please open an issue in the repository or contact the authors of the paper.
+As tabelas utilizadas no manuscrito podem ser encontradas em:
+
+```text
+Manuscript/src/tables/
+```
+
+Os arquivos gerados localmente podem ser diferentes dos arquivos originalmente disponibilizados pelos autores, devido às análises e correções realizadas durante a reprodução.
+
+## Créditos
+
+Código e estrutura original desenvolvidos por Federico Tartarini e Stefano Schiavon, disponibilizados no repositório original do artigo.
+
+Os dados utilizados pertencem à ASHRAE Global Thermal Comfort Database II e devem ser utilizados respeitando as condições de acesso e citação estabelecidas por seus responsáveis.

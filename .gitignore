@@ -1065,3 +1065,7 @@ TSWLatexianTemp*
 # Uncomment the next line to have this generated file ignored.
 #*Notes.bib
 
+
+# Ambiente virtual e backups locais
+.venv-paper310/
+backup-antes-reprocessamento/

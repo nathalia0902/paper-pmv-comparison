@@ -2475,7 +2475,7 @@ def plot_stacked_bar_predictions_ts(
 
     for ix, pmv in enumerate(models):
         var = f"{pmv}_round"
-        df_v = df[df["vel_r"] >= v_min]
+        df_v = data_[data_["vel_r"] >= v_min]
         df_plot = (
             df_v.groupby("thermal_sensation_round")[var]
             .value_counts(normalize=True)
@@ -3136,8 +3136,8 @@ def plot_bias_distribution_by_variable_binned():
         ncol=3,
     )
     plt.tight_layout(rect=[0, 0, 1, 0.98])
+    plt.savefig(f"./Manuscript/src/figures/bias_models.pdf", bbox_inches="tight")
     plt.show()
-    plt.savefig(f"./Manuscript/src/figures/bias_models.pdf")
 
 
 def table_f1_scores():
